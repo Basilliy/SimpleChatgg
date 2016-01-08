@@ -17,7 +17,7 @@ public class Main{
             String name = JOptionPane.showInputDialog("Твое имя?" +
                     "\nLocal host name: " +  InetAddress.getLocalHost().getHostName() +
                     "\nLocal host IP address: " + InetAddress.getLocalHost().getHostAddress());
-
+            if (name == null || name.equals("")) System.exit(1);
             int i = JOptionPane.showConfirmDialog(null, "Ты сервер?");
             //0 - Сервер
             //1 - Клиент
