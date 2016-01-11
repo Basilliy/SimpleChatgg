@@ -1,10 +1,15 @@
 package Basill;
 
+import forSnake.RoomGUI;
+import forSnake.SelectRoomGUI;
+import forSnake.ServerController;
+
 import javax.swing.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 
 public class Main{
     public Socket socket;
@@ -43,7 +48,24 @@ public class Main{
         }
     }
 
-    public static void main(String[] args) {
-        new Main();
+    public static void main(String... t) throws Exception {
+//        new Main();
+//        new SelectRoomGUI();
+        InetAddress address = InetAddress.getLocalHost();
+        int port = 55000;
+
+
+        new ServerController();
+
+
+        new Thread(new RoomGUI(new Socket(address, port), "Клиент1", null));
+//        new Thread(new RoomGUI(new Socket(address, port), "Клиент2", null));
+
+//        new RoomGUI(new Socket(address, port), "Клиент2", null);
+//        new RoomGUI(new Socket(address, port), "Клиент3", null);
+//        new RoomGUI();
     }
+
+
+
 }
