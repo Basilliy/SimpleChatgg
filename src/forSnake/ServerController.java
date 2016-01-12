@@ -1,24 +1,25 @@
 package forSnake;
 
+import javax.swing.*;
 import java.io.*;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
 public class ServerController extends Thread {
-    private final static int PORT = 55000;
+    private static int PORT;
     public boolean listening = true;
     private static final ArrayList<ObjectOutputStream> oos = new ArrayList<>();
 
-    public ServerController() {
+    public ServerController(int PORT) {
         super("ServerController");
+        ServerController.PORT = PORT;
         start();
     }
 
     public void run() {
         try {
-            ServerSocket serverSocket = new ServerSocket(PORT , 0, InetAddress.getLocalHost());
+            ServerSocket serverSocket = new ServerSocket(PORT);
             while (listening) {
                 Socket socket = serverSocket.accept();
                 ObjectOutputStream socketOOS = new ObjectOutputStream(socket.getOutputStream());
@@ -30,7 +31,7 @@ public class ServerController extends Thread {
                 ServerController.yield();
             }
         } catch (IOException e) {
-            System.err.println("Не удается прослушать порт " + PORT);
+            JOptionPane.showMessageDialog(null, "Не удается прослушать порт " + PORT);
         }
     }
 }

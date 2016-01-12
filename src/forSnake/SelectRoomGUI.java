@@ -25,7 +25,7 @@ public class SelectRoomGUI extends JFrame{
 
     public SelectRoomGUI() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-//        setLocationRelativeTo(null);
+        setLocationRelativeTo(null);
         setMinimumSize(new Dimension(400, 315));
         setSize(new Dimension(400, 400));
         setContentPane(mainPanel);
@@ -33,14 +33,15 @@ public class SelectRoomGUI extends JFrame{
 
         readRooms();
 
-
         buttonAddRoom.addActionListener(e -> {
             writeRoom(JOptionPane.showInputDialog(SelectRoomGUI.this, "Введи ip-адресс или название сети",
                     "Добавление комнаты", JOptionPane.PLAIN_MESSAGE));
             readRooms();
         });
 
-        buttonUpdateRooms.addActionListener(e -> updateRooms());
+        buttonUpdateRooms.addActionListener(e -> {
+            updateRooms();
+        });
 
         buttonConnectToRoom.addActionListener(e -> {
             if (listRoom.getSelectedIndex() >= 0)
@@ -76,22 +77,19 @@ public class SelectRoomGUI extends JFrame{
             while (reader.ready()) {
                 String s = reader.readLine();
                 if (s.length() > 1)
-                list.add(new ListItem(s));
+                    list.add(new ListItem(s));
             }
             reader.close();
-
             listRoom.setListData(list.toArray());
-
-            updateRooms();
         } catch (FileNotFoundException e) {
             try {
-                if (!rooms.createNewFile()) System.out.println("Отсутствует путь src/Data");
+                if (!rooms.createNewFile()) JOptionPane.showMessageDialog(SelectRoomGUI.this,
+                        "Отсутствует путь src/Data");
             } catch (IOException e1) {
-                e1.printStackTrace();
+                //Nothing TO DO
             }
-            e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            //Nothing TO DO
         }
     }
 
@@ -138,13 +136,14 @@ public class SelectRoomGUI extends JFrame{
     private void startLikeClient(ListItem item, String name) {
         if (!name.equals("")) {
             try {
+                System.out.println("item.ip = " + item.ip);
                 Socket socket = new Socket(InetAddress.getByName(item.ip), PORT);
-                if (socket.isConnected()) {
-                    this.setVisible(false);
-                    new RoomGUI(socket, name, SelectRoomGUI.this);
-                }
+                this.setVisible(false);
+                RoomGUI roomGUI = new RoomGUI(socket, name, SelectRoomGUI.this);
+                (new Thread(roomGUI)).start();
             } catch (IOException e) {
-                e.printStackTrace();
+                JOptionPane.showMessageDialog(SelectRoomGUI.this, "Не получилось подключится к комнате");
+                System.err.println("Неизвестный хост");
             }
         } else {
             JOptionPane.showMessageDialog(SelectRoomGUI.this, "Введите имя");
@@ -154,17 +153,20 @@ public class SelectRoomGUI extends JFrame{
     private void startLikeServer(String name) {
         if (!name.equals("")) {
             try {
-                new ServerController();
-                startLikeClient(new ListItem(InetAddress.getLocalHost().getHostAddress()),name);
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
+                new ServerController(PORT);
+                Socket socket = new Socket(InetAddress.getLocalHost(), PORT);
+                System.out.println("LocalHost = " + InetAddress.getLocalHost());
+                this.setVisible(false);
+                RoomGUI roomGUI = new RoomGUI(socket, name, SelectRoomGUI.this);
+                (new Thread(roomGUI)).start();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(SelectRoomGUI.this, "Не получилось подключится к комнате");
+                System.err.println("Неизвестный хост");
             }
         } else {
             JOptionPane.showMessageDialog(SelectRoomGUI.this, "Введите имя");
         }
     }
-
-
 
     private class ListItem {
         public String name;
@@ -186,4 +188,7 @@ public class SelectRoomGUI extends JFrame{
         }
     }
 
+    public static void main(String... console) {
+        new SelectRoomGUI();
+    }
 }

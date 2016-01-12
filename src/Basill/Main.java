@@ -52,15 +52,16 @@ public class Main{
 //        new Main();
 //        new SelectRoomGUI();
         InetAddress address = InetAddress.getLocalHost();
+        System.out.println(address);
         int port = 55000;
 
 
-        new ServerController();
+//        new ServerController();
 
 
-        (new Thread(new RoomGUI(new Socket(address, port), "Клиент1", null))).start();
-        (new Thread(new RoomGUI(new Socket(address, port), "Клиент2", null))).start();
-        (new Thread(new RoomGUI(new Socket(address, port), "Клиент3", null))).start();
+//        (new Thread(new RoomGUI(new Socket(address, port), "Клиент1", null))).start();
+//        (new Thread(new RoomGUI(new Socket(address, port), "Клиент2", null))).start();
+//        (new Thread(new RoomGUI(new Socket(address, port), "Клиент3", null))).start();
 //        (new Thread(new RoomGUI(new Socket(address, port), "Клиент4", null))).start();
 //        (new Thread(new RoomGUI(new Socket(address, port), "Клиент5", null))).start();
 //        (new Thread(new RoomGUI(new Socket(address, port), "Клиент6", null))).start();

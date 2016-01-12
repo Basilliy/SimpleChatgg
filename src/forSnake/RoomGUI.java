@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class RoomGUI extends JFrame implements Runnable {
     private JPanel mainPanel;
@@ -24,7 +25,6 @@ public class RoomGUI extends JFrame implements Runnable {
 
 
     public RoomGUI(Socket socket, String name, JFrame owner) {
-        System.out.println("Constructor RoomGUI");
         this.name = name;
         this.socket = socket;
         setTitle(name);
@@ -52,13 +52,10 @@ public class RoomGUI extends JFrame implements Runnable {
             }
         });
         setVisible(true);
-//        run();
-
     }
 
     public void enterText() {
         if (!chatTextField.getText().equals("")) {
-//            chatTextArea.setText(chatTextArea.getText() + name + ": " + chatTextField.getText() + "\n");
             try {
                 out.writeObject(name + ": " + chatTextField.getText() + "\n");
             } catch (IOException e) {
@@ -73,35 +70,24 @@ public class RoomGUI extends JFrame implements Runnable {
     @Override
     public void run() {
         try {
-            System.out.println("Room1CreateStream");
-            System.out.println("socket 3- " + in);
             out.writeObject("В комнату вошел игрок " + name + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
         while (true) {
             try {
-                System.out.println("Room2ReadObject");
                 Object object = in.readObject();
-                System.out.println("Room3GetClass");
                 if (object.getClass() == String.class) {
-                    System.out.println("Room4CastToString");
                     String s = (String) object;
-                        System.out.println("Room5IfEquals");
                         if (!s.equals("")) {
-                            System.out.println("Room6SetText");
                             chatTextArea.setText(chatTextArea.getText() + s);
-                            System.out.println("Room7GetScrollBar");
                             JScrollBar scrollBar = chatScroll.getVerticalScrollBar();
-                            System.out.println("Room8ScrollBarSetValue");
                             scrollBar.setValue(scrollBar.getMaximum());
                         }
                 }
-                System.out.println("Room9ThreadYield");
                 Thread.yield();
-            } catch (IOException | ClassNotFoundException e) {
-                e.printStackTrace();
-                System.out.println("Room10BreakWhile");
+            } catch (Exception se) {
+                JOptionPane.showMessageDialog(RoomGUI.this, "Сервер отключился");
                 break;
             }
         }

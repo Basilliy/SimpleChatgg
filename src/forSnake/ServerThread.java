@@ -1,13 +1,11 @@
 package forSnake;
 
 import java.io.*;
-import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class ServerThread extends Thread {
 
-    private boolean listening = true;
+    public boolean listening = true;
     private final ArrayList<ObjectOutputStream> oos;
     private final ObjectInputStream in;
 
