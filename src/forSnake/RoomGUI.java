@@ -6,38 +6,35 @@ import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
 
 public class RoomGUI extends JFrame implements Runnable {
     private JPanel mainPanel;
-    private JPanel nastyaPanel;
-    private JPanel chatPanel;
-    public  JTextArea chatTextArea;
+    private JTextArea chatTextArea;
     private JButton chatButtonEnter;
     private JTextField chatTextField;
-    public JScrollPane chatScroll;
+    private JScrollPane chatScroll;
+    private JLabel bottomLabel;
 
-    public Socket socket;
-    private String name;
-    ObjectOutputStream out;
-    ObjectInputStream in;
-
+    private final String name;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
 
     public RoomGUI(Socket socket, String name, JFrame owner) {
         this.name = name;
-        this.socket = socket;
         setTitle(name);
         setContentPane(mainPanel);
         setSize(450, 500);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(owner);
-
         try {
             out = new ObjectOutputStream(socket.getOutputStream());
             in = new ObjectInputStream(socket.getInputStream());
+            bottomLabel.setText(name + " (" + InetAddress.getLocalHost() + ")");
         } catch (IOException e) {
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(RoomGUI.this, "Не удается подключится");
+            System.exit(0);
         }
         chatButtonEnter.addActionListener(e -> {
             enterText();
@@ -71,9 +68,7 @@ public class RoomGUI extends JFrame implements Runnable {
     public void run() {
         try {
             out.writeObject("В комнату вошел игрок " + name + "\n");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException se) { /*Nothing TO DO */ }
         while (true) {
             try {
                 Object object = in.readObject();
@@ -86,8 +81,9 @@ public class RoomGUI extends JFrame implements Runnable {
                         }
                 }
                 Thread.yield();
-            } catch (Exception se) {
+            } catch (Exception e) {
                 JOptionPane.showMessageDialog(RoomGUI.this, "Сервер отключился");
+                System.exit(0);
                 break;
             }
         }

@@ -26,7 +26,7 @@ public class ServerController extends Thread {
                 ObjectInputStream socketOIS = new ObjectInputStream(socket.getInputStream());
                 synchronized (oos) { oos.add(socketOOS); }
                 System.out.println("ServerThread " + oos.size());
-                ServerThread readerThread = new ServerThread(oos, socketOIS);
+                ServerThread readerThread = new ServerThread(oos, socketOIS, socketOOS);
                 readerThread.start();
                 ServerController.yield();
             }

@@ -17,6 +17,7 @@ public class SelectRoomGUI extends JFrame{
     private JButton buttonUpdateRooms;
     private JList<Object> listRoom;
     private JTextField textField;
+    private JLabel bottomLabel;
 
     private File rooms = new File("src/Data/Servers.txt");
     private ArrayList<ListItem> list;
@@ -26,22 +27,24 @@ public class SelectRoomGUI extends JFrame{
     public SelectRoomGUI() {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setMinimumSize(new Dimension(400, 315));
-        setSize(new Dimension(400, 400));
+        setMinimumSize(new Dimension(400, 390));
+        setSize(new Dimension(400, 390));
         setContentPane(mainPanel);
         setVisible(true);
+        try {
+            bottomLabel.setText(InetAddress.getLocalHost().toString());
+            textField.setText(InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) { /*Nothing TO DO */ }
 
         readRooms();
 
         buttonAddRoom.addActionListener(e -> {
-            writeRoom(JOptionPane.showInputDialog(SelectRoomGUI.this, "Введи ip-адресс или название сети",
+            writeRoom(JOptionPane.showInputDialog(SelectRoomGUI.this, "Введи ip-адресс или название сервера",
                     "Добавление комнаты", JOptionPane.PLAIN_MESSAGE));
             readRooms();
         });
 
-        buttonUpdateRooms.addActionListener(e -> {
-            updateRooms();
-        });
+        buttonUpdateRooms.addActionListener(e -> updateRooms());
 
         buttonConnectToRoom.addActionListener(e -> {
             if (listRoom.getSelectedIndex() >= 0)
@@ -85,12 +88,8 @@ public class SelectRoomGUI extends JFrame{
             try {
                 if (!rooms.createNewFile()) JOptionPane.showMessageDialog(SelectRoomGUI.this,
                         "Отсутствует путь src/Data");
-            } catch (IOException e1) {
-                //Nothing TO DO
-            }
-        } catch (IOException e) {
-            //Nothing TO DO
-        }
+            } catch (IOException e1) { /*Nothing TO DO */ }
+        } catch (IOException e) { /*Nothing TO DO */ }
     }
 
     private void updateRooms() {
@@ -136,7 +135,6 @@ public class SelectRoomGUI extends JFrame{
     private void startLikeClient(ListItem item, String name) {
         if (!name.equals("")) {
             try {
-                System.out.println("item.ip = " + item.ip);
                 Socket socket = new Socket(InetAddress.getByName(item.ip), PORT);
                 this.setVisible(false);
                 RoomGUI roomGUI = new RoomGUI(socket, name, SelectRoomGUI.this);
