@@ -19,10 +19,12 @@ public class RoomGUI extends JFrame implements Runnable {
 
     public Socket socket;
     private String name;
+    ObjectOutputStream out;
+    ObjectInputStream in;
 
 
     public RoomGUI(Socket socket, String name, JFrame owner) {
-        System.out.println("-------------------constRoomS");
+        System.out.println("Constructor RoomGUI");
         this.name = name;
         this.socket = socket;
         setTitle(name);
@@ -31,7 +33,12 @@ public class RoomGUI extends JFrame implements Runnable {
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo(owner);
 
-
+        try {
+            out = new ObjectOutputStream(socket.getOutputStream());
+            in = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         chatButtonEnter.addActionListener(e -> {
             enterText();
             chatTextField.setFocusable(true);
@@ -45,15 +52,14 @@ public class RoomGUI extends JFrame implements Runnable {
             }
         });
         setVisible(true);
-        System.out.println("-------------------constRoomE");
-        run();
+//        run();
+
     }
 
-    public void enterText(){
+    public void enterText() {
         if (!chatTextField.getText().equals("")) {
 //            chatTextArea.setText(chatTextArea.getText() + name + ": " + chatTextField.getText() + "\n");
             try {
-                ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
                 out.writeObject(name + ": " + chatTextField.getText() + "\n");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -67,22 +73,14 @@ public class RoomGUI extends JFrame implements Runnable {
     @Override
     public void run() {
         try {
-            ObjectOutputStream out = new ObjectOutputStream(socket.getOutputStream());
+            System.out.println("Room1CreateStream");
+            System.out.println("socket 3- " + in);
             out.writeObject("В комнату вошел игрок " + name + "\n");
         } catch (IOException e) {
             e.printStackTrace();
         }
         while (true) {
             try {
-                System.out.println("Room1CreateStream");
-                System.out.println("soket 1- " + socket);
-                System.out.println("soket 2- " + socket.getInputStream().toString());
-
-                if (new ObjectInputStream(socket.getInputStream()) == null) {
-                    System.out.println("null");
-                } else System.out.println("not null");
-
-                ObjectInputStream in = new ObjectInputStream(socket.getInputStream());
                 System.out.println("Room2ReadObject");
                 Object object = in.readObject();
                 System.out.println("Room3GetClass");

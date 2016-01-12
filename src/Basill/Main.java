@@ -58,7 +58,13 @@ public class Main{
         new ServerController();
 
 
-        new Thread(new RoomGUI(new Socket(address, port), "Клиент1", null));
+        (new Thread(new RoomGUI(new Socket(address, port), "Клиент1", null))).start();
+        (new Thread(new RoomGUI(new Socket(address, port), "Клиент2", null))).start();
+        (new Thread(new RoomGUI(new Socket(address, port), "Клиент3", null))).start();
+//        (new Thread(new RoomGUI(new Socket(address, port), "Клиент4", null))).start();
+//        (new Thread(new RoomGUI(new Socket(address, port), "Клиент5", null))).start();
+//        (new Thread(new RoomGUI(new Socket(address, port), "Клиент6", null))).start();
+
 //        new Thread(new RoomGUI(new Socket(address, port), "Клиент2", null));
 
 //        new RoomGUI(new Socket(address, port), "Клиент2", null);
